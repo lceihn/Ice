@@ -13,7 +13,7 @@
 #define _ICE_CFG_H
 
 /*** 配置芯片的的型号, 目前支持3种, STM32系列, GD32F30X系列, RP2040(树莓派Pico) ***/
-#define ICE_GD32F30X
+//#define ICE_GD32F30X
 //#define ICE_STM32
 //#define ICE_RP2040
 #if (defined (ICE_GD32F30X) + defined (ICE_STM32) + defined (ICE_RP2040) > 1)

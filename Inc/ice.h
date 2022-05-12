@@ -42,6 +42,35 @@ void delay_us(uint32_t us);
 void systick_deinit(void);
 void systick_handler(void);
 void ice_gd32_init();
+
+/* function declarations */
+/* this function handles NMI exception */
+void NMI_Handler(void);
+/* this function handles HardFault exception */
+void HardFault_Handler(void);
+/* this function handles MemManage exception */
+void MemManage_Handler(void);
+/* this function handles BusFault exception */
+void BusFault_Handler(void);
+/* this function handles UsageFault exception */
+void UsageFault_Handler(void);
+/* this function handles SVC exception */
+void SVC_Handler(void);
+/* this function handles DebugMon exception */
+void DebugMon_Handler(void);
+/* this function handles PendSV exception */
+void PendSV_Handler(void);
+/* this function handles SysTick exception */
+void SysTick_Handler(void);
+
+#if ICE_UART
+void USART0_IRQHandler(void);
+#endif
+
+#if ICE_EXTI
+void EXTI10_15_IRQHandler(void);
+#endif
+
 #endif
 
 #if ICE_IWDG
