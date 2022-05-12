@@ -56,6 +56,9 @@
     #include "hardware/adc.h"
     #include "hardware/resets.h"
 #endif
+#if ICE_IWDG
+    #include "hardware/watchdog.h"
+#endif
 #endif
 
 #ifdef ICE_DS18B20
