@@ -29,6 +29,7 @@ void ice_gpio_init()
 #ifdef ICE_RP2040
     /* LED PIN: GPIO_OUT_PP */
     gpio_init(LED_PIN);
+//    gpio_set_pulls(LED_PIN, false, false); //设置上/下拉
     gpio_set_dir(LED_PIN, GPIO_OUT);
     LED(1);
 
