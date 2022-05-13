@@ -14,6 +14,16 @@ void ice_init()
 #ifdef ICE_GD32F30X
     ice_gd32_init(); //gd32 system init
 #endif
+#ifdef ICE_RP2040
+//    vreg_set_voltage(VREG_VOLTAGE_1_30);//300MHz需要调压，如果270MHz不需要加这句
+    set_sys_clock_khz(PLL_SYS_KHZ, true);   //这个方法只能改系统主频, 外设时钟频率不会跟着变
+    // 外设时钟频率和系统主频一致
+    clock_configure(clk_peri,
+                    0,
+                    CLOCKS_CLK_PERI_CTRL_AUXSRC_VALUE_CLK_SYS,
+                    ICE_SYS_CLK,
+                    ICE_SYS_CLK);
+#endif
 #if ICE_GPIO
     ice_gpio_init(); //gpio init
 #endif

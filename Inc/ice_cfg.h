@@ -15,7 +15,7 @@
 /*** 配置芯片的的型号, 目前支持3种, STM32系列, GD32F30X系列, RP2040(树莓派Pico) ***/
 //#define ICE_GD32F30X
 //#define ICE_STM32
-//#define ICE_RP2040
+#define ICE_RP2040
 #if (defined (ICE_GD32F30X) + defined (ICE_STM32) + defined (ICE_RP2040) > 1)
 #error "重复定义芯片"
 #elif (defined (ICE_GD32F30X) + defined (ICE_STM32) + defined (ICE_RP2040) == 0)
@@ -25,7 +25,7 @@
 
 /************ 使能外设 ************/
 #define ICE_IWDG    0  //看门狗
-#define ICE_GPIO    0  //GPIO
+#define ICE_GPIO    1  //GPIO
 #define ICE_EXTI    0  //外部中断
 #define ICE_UART    0  //串口
 #define ICE_PWM     0  //PWM
@@ -46,6 +46,8 @@
 
 #ifdef ICE_RP2040
 #include "hardware/irq.h"
+#include "hardware/clocks.h"
+#include <pico/stdlib.h>
 #if ICE_GPIO
     #include "hardware/gpio.h"
 #endif
@@ -86,6 +88,7 @@
 //-------------------------------------------------
 #ifdef ICE_RP2040
 #define ICE_SYS_CLK     (125 * 1000 * 1000)  //主频125MHz
+#define PLL_SYS_KHZ     (ICE_SYS_CLK / 1000)
 #endif
 
 //************** 看门狗 配置 *****************************************************************************************//
