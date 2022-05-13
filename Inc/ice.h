@@ -93,6 +93,11 @@ void ice_uart_it_callback(IceUart *ice);    //ice uart interrupt callback, add t
 void ice_uart_task(IceUart *ice);		 //process uart receive task
 #endif
 
+#if ICE_SPI
+void ice_spi_init();
+void ice_spi_write(uint8_t *buf, uint16_t len);
+#endif
+
 #if ICE_ADC
 void ice_adc_init();
 uint16_t ice_adc_get_value(uint8_t ch);

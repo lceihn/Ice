@@ -29,7 +29,7 @@
 #define ICE_EXTI    0  //外部中断
 #define ICE_UART    0  //串口
 #define ICE_PWM     0  //PWM
-#define ICE_SPI     0  //SPI
+#define ICE_SPI     1  //SPI
 #define ICE_I2C     0  //I2C
 #define ICE_ADC     0  //ADC
 
@@ -50,6 +50,9 @@
 #include <pico/stdlib.h>
 #if ICE_GPIO
     #include "hardware/gpio.h"
+#endif
+#if ICE_SPI
+#include "hardware/spi.h"
 #endif
 #if ICE_PWM
     #include "hardware/pwm.h"
@@ -115,7 +118,7 @@
 #endif
 
 #endif
-//************** 外部中断 配置 ***************************************************************************************//
+//************** 外部中断 配置 *****************************************************************************************//
 #if ICE_EXTI
 //-------------------------------------------------
 #ifdef ICE_GD32F30X
@@ -130,7 +133,7 @@
 #ifdef ICE_RP2040
 #endif
 #endif
-//************** 串口 配置 *******************************************************************************************//
+//************** 串口 配置 ********************************************************************************************//
 #if ICE_UART
 #define ICE_DMA_SIZE        (256)     //dma rx size DMA接收区缓冲大小
 #define ICE_UART_SIZE       (6)       //packet size 一帧数据大小
@@ -150,6 +153,30 @@
 #endif
 
 #endif
+//************** SPI 配置 ********************************************************************************************//
+#ifdef ICE_SPI
+//-------------------------------------------------
+#ifdef ICE_GD32F30X
+#endif
+#ifdef ICE_STM32
+#endif
+#ifdef ICE_RP2040
+#define ICE_SPI_ID          spi0
+#define ICE_SPI_CLK         (2 * 1000 * 1000) //2MHz //spi 时钟频率
+#define ICE_SPI_MISO_Pin    (0)  //MISO Pin ---> GP0
+#define ICE_SPI_SCK_Pin     (2)  //SCK Pin ---> GP2
+#define ICE_SPI_MOSI_Pin    (3)  //MOSI Pin ---> GP3
+#define ICE_SPI_CS_Pin      (1)  //CS Pin ---> GP1
+#define ICE_SPI_CS(x)       gpio_put(ICE_SPI_CS_Pin, x)
+#define ICE_SPI_CPOL        (0)  //时钟极性, 0:低, 1:高
+#define ICE_SPI_CPHA        (0)  //时钟相位, 0:1边沿采样, 1:2边沿采样
+#define ICE_SPI_MSB_FIRST   (1)  //MSB在前
+#define ICE_SPI_HARD_CS     (0)  //硬件CS, 0:失能, 1:使能
+#endif
+//-------------------------------------------------
+//-------------------------------------------------
+#endif
+//-------------------------------------------------
 //************** ADC 配置 ********************************************************************************************//
 #if ICE_ADC /* adc defines */
 #define ICE_ADC_TEMP_SENSOR     (0)  //内部温度传感器使能
