@@ -11,7 +11,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         )
 
 # 编译后打印占用 ROM, RAM, 仅RP2040
-#target_link_options(pico_standard_link INTERFACE "LINKER:--print-memory-usage")
+target_link_options(pico_standard_link INTERFACE "LINKER:--print-memory-usage")
 
 # 使能外部库
 SET(ds18b20_en 0)       # ds18b20

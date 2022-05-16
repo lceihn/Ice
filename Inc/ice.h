@@ -73,6 +73,10 @@ void EXTI10_15_IRQHandler(void);
 
 #endif
 
+#ifdef ICE_RP2040
+void rp2040_flash_program(uint32_t addr, const uint8_t *buf, uint16_t len);
+#endif
+
 #if ICE_IWDG
 void ice_iwdg_init();
 void ice_iwdg_feed();
