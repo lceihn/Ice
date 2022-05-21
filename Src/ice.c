@@ -39,6 +39,9 @@ void ice_init()
 #if ICE_PWM
     ice_pwm_init();  //pwm init
 #endif
+#if ICE_PIO
+    ice_pio_init();
+#endif
 #ifdef ICE_DS18B20
     ice_ds18b20_init(); //ds18b20 init
 #endif

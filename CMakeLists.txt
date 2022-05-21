@@ -11,11 +11,12 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         )
 
 # 编译后打印占用 ROM, RAM, 仅RP2040
-target_link_options(pico_standard_link INTERFACE "LINKER:--print-memory-usage")
+#target_link_options(pico_standard_link INTERFACE "LINKER:--print-memory-usage")
 
 # 使能外部库
 SET(ds18b20_en 0)       # ds18b20
 SET(easyflash_en 0)     # easyflash
+SET(ws2812_en 1)        # ws2812
 
 if (ds18b20_en)
     #添加子目录
@@ -34,6 +35,15 @@ if (easyflash_en)
             -DICE_EASYFLASH # easyflash
             )
 endif (easyflash_en)
+
+if (ws2812_en)
+    #添加子目录
+    add_subdirectory(ws2812)
+    #使能该宏启用 ws2812_
+    target_compile_definitions(${PROJECT_NAME} PUBLIC
+            -DICE_WS2812 # ws2812
+            )
+endif (ws2812_en)
 
 
 

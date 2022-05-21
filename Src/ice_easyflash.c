@@ -7,7 +7,8 @@
 */
 void ice_easyflash_init()
 {
-    EfErrCode err = easyflash_init();
+    EfErrCode err = EF_NO_ERR;
+    err = easyflash_init();
     ICE_ASSERT(!err)
 }
 

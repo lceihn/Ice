@@ -73,10 +73,6 @@ void EXTI10_15_IRQHandler(void);
 
 #endif
 
-#ifdef ICE_RP2040
-void rp2040_flash_program(uint32_t addr, const uint8_t *buf, uint16_t len);
-#endif
-
 #if ICE_IWDG
 void ice_iwdg_init();
 void ice_iwdg_feed();
@@ -115,6 +111,10 @@ void ice_pwm_set_cycle(uint8_t cyc);
 void ice_pwm_set_value(uint16_t val);
 #endif
 
+#if ICE_PIO
+void ice_pio_init();
+#endif
+
 #ifdef ICE_DS18B20
 void ice_ds18b20_init();
 #ifdef ICE_GD32F30X
@@ -124,6 +124,10 @@ __INLINE int16_t ice_ds18b20_getTemp();
 
 #ifdef ICE_EASYFLASH
 void ice_easyflash_init();
+#endif
+
+#ifdef ICE_WS2812
+void ws2812_set_color(uint32_t rgb);
 #endif
 
 void ice_init();

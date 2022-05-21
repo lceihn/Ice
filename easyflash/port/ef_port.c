@@ -44,7 +44,6 @@ static const ef_env default_env_set[] = {
     {"password", "ice", 0},              //密码
     {"curt_th", &env_curt_th, sizeof(env_curt_th)},     //电流 adc 阈值
     {"vr_th", &env_vr_th, sizeof(env_vr_th)},           //驻波 adc 阈值
-    {"email", "806277022@qq.com", 0},    //邮箱
 
 };
 
@@ -89,18 +88,17 @@ EfErrCode ef_port_read(uint32_t addr, uint32_t *buf, size_t size)
     EfErrCode result = EF_NO_ERR;
 
     /* You can add your code under here. */
-#ifdef ICE_RP2040
-    addr += XIP_BASE;
-#endif
-//#ifdef ICE_GD32F30X
+#ifdef ICE_GD32F30X
     uint8_t *buf_8 = (uint8_t *) buf;
     size_t i;
 
     /*copy from flash to ram */
     for (i = 0; i < size; i++, addr++, buf_8++)
+    {
         *buf_8 = *(uint8_t *) addr;
+    }
+#endif
 
-//#endif
     return result;
 }
 
@@ -150,17 +148,6 @@ EfErrCode ef_port_erase(uint32_t addr, size_t size)
 
     fmc_lock();
 #endif
-#ifdef ICE_RP2040
-    asm("cpsid i" : : : "memory");
-    size_t erase_pages;
-    /* calculate pages */
-    erase_pages = size / EF_ERASE_MIN_SIZE;
-    if (size % EF_ERASE_MIN_SIZE != 0)
-        erase_pages++;
-    for (int i = 0; i < erase_pages; ++i)
-        flash_range_erase(addr + (EF_ERASE_MIN_SIZE * i), EF_ERASE_MIN_SIZE);
-    asm("cpsie i" : : : "memory");
-#endif
 
     return result;
 }
@@ -202,10 +189,6 @@ EfErrCode ef_port_write(uint32_t addr, const uint32_t *buf, size_t size)
     }
     fmc_lock();
 #endif
-#ifdef ICE_RP2040
-    uint8_t *buf_8 = (uint8_t *) buf;
-    rp2040_flash_program(addr, buf_8, size);
-#endif
 
     return result;
 }
@@ -219,9 +202,6 @@ void ef_port_env_lock(void)
 #ifdef ICE_GD32F30X
     __disable_irq();
 #endif
-#ifdef ICE_RP2040
-    asm("cpsid i" : : : "memory");
-#endif
 }
 
 /**
@@ -232,9 +212,6 @@ void ef_port_env_unlock(void)
     /* You can add your code under here. */
 #ifdef ICE_GD32F30X
     __enable_irq();
-#endif
-#ifdef ICE_RP2040
-    asm("cpsie i" : : : "memory");
 #endif
 }
 

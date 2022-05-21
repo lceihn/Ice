@@ -29,9 +29,10 @@
 #define ICE_EXTI    0  //外部中断
 #define ICE_UART    0  //串口
 #define ICE_PWM     0  //PWM
-#define ICE_SPI     0  //SPI
+#define ICE_SPI     1  //SPI
 #define ICE_I2C     0  //I2C
 #define ICE_ADC     0  //ADC
+#define ICE_PIO     1  //PIO
 
 /************ 附加功能 ************/
 #define ICE_UART_DEBUG      0   //启用 printf 重定向至串口
@@ -45,12 +46,11 @@
 #endif
 
 #ifdef ICE_RP2040
-#include <hardware/irq.h>
-#include <hardware/clocks.h>
+#include "hardware/irq.h"
+#include "hardware/clocks.h"
 #include <pico/stdlib.h>
-#include <hardware/flash.h>
 #if ICE_GPIO
-    #include "hardware/gpio.h"
+#include "hardware/gpio.h"
 #endif
 #if ICE_SPI
 #include "hardware/spi.h"
@@ -66,6 +66,9 @@
     #include "hardware/watchdog.h"
 #endif
 #endif
+#if ICE_PIO
+#include "hardware/pio.h"
+#endif
 
 #ifdef ICE_DS18B20
 #include "ds18b20.h"
@@ -73,6 +76,10 @@
 
 #ifdef ICE_EASYFLASH
 #include "easyflash.h"
+#endif
+
+#ifdef ICE_WS2812
+#include "ws2812.pio.h"
 #endif
 
 #if ICE_UART_DEBUG
@@ -233,6 +240,13 @@
 #error "PWM 频率设置出现错误, 可能溢出了"
 #endif
 #endif
+//************** PIO 配置 ********************************************************************************************//
+#if ICE_PIO
+#ifdef ICE_RP2040
+#define ICE_PIO0    pio0    //PIO 0
+#define ICE_SM0     0       //状态机0
+#endif
+#endif
 //************** ds18b20 配置 ****************************************************************************************//
 #ifdef ICE_DS18B20 /* ds18b20 defines */
 //-------------------------------------------------
@@ -254,7 +268,6 @@
 //-------------------------------------------------
 #ifdef ICE_GD32F30X
     #define ICE_FLASH_PAGE_SIZE     (2048)  //2KB, GD32F30X 页大小
-    #define ICE_ERASE_MIN_SIZE      (ICE_FLASH_PAGE_SIZE) //GD32F30X 最小擦除大小为一个页 2kB
     #define ICE_EF_WRITE_GRAN       (32)    //only support 1(nor flash)/ 8(stm32f4)/ 32(stm32f1)
     #define ICE_EF_START_ADDR       (FLASH_BASE + 200 * ICE_FLASH_PAGE_SIZE)  //easyflash 起始地址
     #define ICE_ENV_AREA_SIZE       (20 * ICE_FLASH_PAGE_SIZE)  //easyflash环境变量存储空间大小为 20 * 2 = 40KB
@@ -264,15 +277,23 @@
 #endif
 //-------------------------------------------------
 #ifdef ICE_RP2040
-#define ICE_FLASH_PAGE_SIZE     (FLASH_PAGE_SIZE)  //256B, RP2040(W25QXX) 页大小
-#define ICE_ERASE_MIN_SIZE      (FLASH_SECTOR_SIZE) //RP2040 最小擦除大小为一个扇区 4kB
-#define ICE_EF_WRITE_GRAN       (1)    //only support 1(nor flash)/ 8(stm32f4)/ 32(stm32f1)
-#define ICE_EF_START_ADDR       (7 * 1024 * 1024)  //easyflash 起始地址
-#define ICE_ENV_AREA_SIZE       (128 * FLASH_SECTOR_SIZE)  //easyflash环境变量存储空间大小为 128 * 4 = 512KB
 #endif
 //-------------------------------------------------
-#define ICE_EF_ENV_VER_NUM      (1)  //添加新的环境变量后需要+1
+#define ICE_EF_ENV_VER_NUM      (0)  //添加新的环境变量后需要+1
 #endif
+//************** WS2812 配置 *****************************************************************************************//
+#ifdef ICE_WS2812
+#define RED     (0xFF0000) //红
+#define ORANGE  (0xFF7F00) //橙
+#define YELLOW  (0xFFFF00) //黄
+#define GREEN   (0x00FF00) //绿
+#define INDIGO  (0x007FFF) //青
+#define BLUE    (0x0000FF) //蓝
+#define PURPLE  (0x8B00FF) //紫
 
+#ifdef ICE_RP2040
+#define WS2812_Pin    (28)  //ws2812 pin
+#endif
+#endif
 
 #endif //_ICE_CFG_H

@@ -1,0 +1,49 @@
+;
+; Copyright (c) 2020 Raspberry Pi (Trading) Ltd.
+;
+; SPDX-License-Identifier: BSD-3-Clause
+;
+
+.program ws2812
+.side_set 1
+
+.define public T1 2
+.define public T2 5
+.define public T3 7
+
+.lang_opt python sideset_init = pico.PIO.OUT_HIGH
+.lang_opt python out_init     = pico.PIO.OUT_HIGH
+.lang_opt python out_shiftdir = 1
+
+.wrap_target
+
+bitloop:
+    out x, 1       side 0           ; //将OSR的最高的1bit(因为是OSR左移)输出到X寄存器, 并且保持初始状态为低电平
+    jmp !x do_zero side 1 [3 - 1]   ; //持续300ns高电平并且跳转
+do_one:
+    nop            side 1 [4 - 1]   ; //持续400ns高电平
+do_zero:
+    jmp bitloop    side 0 [7 - 1]   ; //低电平持续700ns
+.wrap
+
+% c-sdk {
+#include "hardware/clocks.h"
+
+static inline void ws2812_program_init(PIO pio, uint sm, uint offset, uint pin) {
+
+    pio_gpio_init(pio, pin);  //初始化 pio pin
+    pio_sm_set_consecutive_pindirs(pio, sm, pin, 1, true); //设置 pin 数量为1 方向为输出
+
+    pio_sm_config c = ws2812_program_get_default_config(offset); //获取一个状态机的默认配置
+    sm_config_set_sideset_pins(&c, pin);    //side-set
+    sm_config_set_out_shift(&c, false, true, 24); //OSR移位方向为左移 autopull  OSR阈值为24bit
+    sm_config_set_fifo_join(&c, PIO_FIFO_JOIN_TX); //使用更多的FIFO来增加数据带宽
+
+    //设置状态机的运行频率为100ns, 10MHz
+    float div = clock_get_hz(clk_sys) / (10000000.0f);
+    sm_config_set_clkdiv(&c, div);
+
+    pio_sm_init(pio, sm, offset, &c);
+    pio_sm_set_enabled(pio, sm, true);
+}
+%}

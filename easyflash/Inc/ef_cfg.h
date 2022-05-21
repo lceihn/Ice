@@ -55,7 +55,7 @@
 /* #define EF_USING_LOG */
 
 /* The minimum size of flash erasure. May be a flash sector size. */
-#define EF_ERASE_MIN_SIZE       ICE_ERASE_MIN_SIZE     /* @note you must define it for a value */
+#define EF_ERASE_MIN_SIZE       ICE_FLASH_PAGE_SIZE     /* @note you must define it for a value */
 
 /* the flash write granularity, unit: bit
  * only support 1(nor flash)/ 8(stm32f4)/ 32(stm32f1) */
