@@ -16,7 +16,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 # 使能外部库
 SET(ds18b20_en 0)       # ds18b20
 SET(easyflash_en 0)     # easyflash
-SET(ws2812_en 1)        # ws2812
+SET(ws2812_en 0)        # ws2812
 
 if (ds18b20_en)
     #添加子目录

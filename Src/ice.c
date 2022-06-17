@@ -33,6 +33,9 @@ void ice_init()
 #if ICE_UART
     ice_uart_init(&ice_uart); //uart init
 #endif
+#if ICE_SPI
+    ice_spi_init();
+#endif
 #if ICE_ADC
     ice_adc_init();  //adc init
 #endif
