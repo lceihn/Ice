@@ -31,9 +31,9 @@ void nvic_config(void)
 {
     nvic_priority_group_set(NVIC_PRIGROUP_PRE2_SUB2);
 
-    nvic_irq_enable(EXTI5_9_IRQn, 2, 0);
-    nvic_irq_enable(USART0_IRQn, 3, 3);
-    //nvic_irq_enable(TIMER2_IRQn, 3, 0);
+//    nvic_irq_enable(EXTI5_9_IRQn, 2, 0);
+//    nvic_irq_enable(USART0_IRQn, 3, 3);
+//    nvic_irq_enable(TIMER2_IRQn, 3, 0);
 }
 
 /**

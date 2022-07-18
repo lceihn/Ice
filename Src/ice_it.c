@@ -146,6 +146,16 @@ void USART0_IRQHandler(void)
 {
     ice_uart_it_callback(&ice_uart);
 }
+
+void USART1_IRQHandler(void)
+{
+    ice_uart_it_callback(&ice_uart);
+}
+
+void USART2_IRQHandler(void)
+{
+    ice_uart_it_callback(&ice_uart);
+}
 #endif
 
 #if ICE_EXTI

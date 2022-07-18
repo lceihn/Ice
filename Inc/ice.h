@@ -28,8 +28,6 @@
 /************ Declare ************/
 #if ICE_UART
 extern IceUart ice_uart;
-extern uint16_t curt_th;
-extern uint16_t vr_th;
 #endif
 
 
@@ -65,6 +63,8 @@ void SysTick_Handler(void);
 
 #if ICE_UART
 void USART0_IRQHandler(void);
+void USART1_IRQHandler(void);
+void USART2_IRQHandler(void);
 #endif
 
 #if ICE_EXTI

@@ -3,9 +3,6 @@
 /* global variable  */
 #if ICE_UART
 IceUart ice_uart;
-//电流 驻波 阈值设置 (adc 值)
-uint16_t curt_th = 4095;
-uint16_t vr_th = 4095;
 #endif
 
 

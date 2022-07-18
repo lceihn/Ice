@@ -27,7 +27,7 @@
 #define ICE_IWDG    0  //看门狗
 #define ICE_GPIO    0  //GPIO
 #define ICE_EXTI    0  //外部中断
-#define ICE_UART    0  //串口
+#define ICE_UART    1  //串口
 #define ICE_PWM     0  //PWM
 #define ICE_SPI     0  //SPI
 #define ICE_I2C     0  //I2C
@@ -143,32 +143,27 @@
 #endif
 //************** 串口 配置 ********************************************************************************************//
 #if ICE_UART
-#define ICE_DMA_SIZE        (256)     //dma rx size DMA接收区缓冲大小
-#define ICE_UART_SIZE       (6)       //packet size 一帧数据大小
-#define ICE_UART_HEAD       (0x11)    //packet head 帧头
-//#define ICE_UART_END        (0x21)    //packet end  帧尾
-/* packet bytes definition */
-#define HEAD     (0)		//head
-#define CMD      (1)	    //command
-#define ADDR     (2)	    //addr
-#define DB1      (3)	    //data byte 1
-#define DB2      (4)	    //data byte 2
-#define CHECK    (5)        //check
-#define END      CHECK      //end
-
-#if (ICE_UART_SIZE != END + 1)
-#error "ICE_UART_SIZE(数据包大小)定义有误"
+#define ICE_UART_BAUD           (115200U) //uart baud
+#define ICE_UART_DMA_SIZE       (256)     //uart dma rx size DMA接收区缓冲大小
+#define ICE_PACKET_SIZE         (6)       //packet size 一帧数据大小
+//-------------------------------------------------
+#ifdef  ICE_GD32F30X
+#define ICE_UARTx               (USART1)    //USARTx, USART1, TX:PA2, RX:PA3, RX_DMA: DMA0_CH5
+#define ICE_UARTx_RCU1          (RCU_USART1)
+#define ICE_UARTx_IRQn          (USART1_IRQn)
+#define ICE_UARTx_RCU2          (RCU_GPIOA)
+#define ICE_UARTx_Port          (GPIOA)
+#define ICE_UARTx_Tx_Pin        (GPIO_PIN_2)
+#define ICE_UARTx_Rx_Pin        (GPIO_PIN_3)
+#define ICE_UARTx_DMAx          (DMA0)
+#define ICE_UARTx_DMAx_RCU      (RCU_DMA0)
+#define ICE_UARTx_DMAx_Rx_CH    (DMA_CH5)
 #endif
-
 #endif
 //************** SPI 配置 ********************************************************************************************//
-#ifdef ICE_SPI
+#if ICE_SPI
 //-------------------------------------------------
 #ifdef ICE_GD32F30X
-__STATIC_INLINE void spi1_write(uint16_t data) {
-    while(!(SPI_STAT(SPI1) & SPI_FLAG_TBE));
-    SPI_DATA(SPI1) = data;
-}
 #endif
 #ifdef ICE_STM32
 #endif

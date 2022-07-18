@@ -23,19 +23,19 @@ typedef enum
     Packtet_Size_Err,               //packet size error
     Head_Or_End_Err,                //head or end error
     Check_Err,                      //check error
-    CMD_Err,                        //command error
-}Ack_Flag_Type;
+    CMD_Err,                        //command is not exist error
+}IceUartError;
 
 /* ice uart structure */
 typedef struct
 {
     //UART_HandleTypeDef *huart;      //pointer to stm32 huart x
     uint32_t huart;                 //gd32 usartx
-    uint8_t rx[ICE_DMA_SIZE];   //ice uart receive data buffer(maxlength:256)
+    uint8_t rx[ICE_UART_DMA_SIZE];  //ice uart receive data buffer(maxlength:256)
     uint8_t rx_flag;                //ice uart rx flag, 0:wait for receive, 1:received packet data
     uint8_t rx_len;                 //ice uart actually receive packet length
-    uint8_t tx[ICE_DMA_SIZE];   //ice uart tx data buffer(maxlength:256)
-    uint8_t error;                  //ice error
+    uint8_t tx[ICE_UART_DMA_SIZE];  //ice uart tx data buffer(maxlength:256)
+    uint8_t err;                    //ice uart error
 }IceUart;
 #endif
 //--------------------------------------------------------------------------------------------------------------------//

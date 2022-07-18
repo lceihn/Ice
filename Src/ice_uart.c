@@ -22,12 +22,7 @@ static void uart_dma_init(IceUart *ice);
 static void uart_receive_dma(IceUart *ice);
 static void uart_transmit(uint32_t huart, uint8_t *pData, uint16_t Size);
 
-static void cmd_0x01_handle(IceUart *ice);
-static void cmd_0x02_handle(IceUart *ice);
-static void cmd_0x03_handle(IceUart *ice);
-
-
-static uint8_t isChecked(IceUart *ice);
+static void check(IceUart *ice);
 static void clear(IceUart *ice);
 
 #if ICE_UART_DEBUG
@@ -49,32 +44,19 @@ PUTCHAR_PROTOTYPE
 #endif
 
 /**
- * @brief  return check ok ? 校验数据
+ * @brief  校验数据
  * @param  ice              
  * @return 
  */
-static uint8_t isChecked(IceUart *ice)
+static void check(IceUart *ice)
 {
-    uint8_t ok = 1;
-    ice->error = Ack_OK;
+    ice->err = Ack_OK;
 
-    if (ice->rx_len != ICE_UART_SIZE) //接收数据大小:     //todo 接收校验
+    //接收校验
+    if (ice->rx_len != ICE_PACKET_SIZE) //接收数据大小:?
     {
-        ice->error = Packtet_Size_Err;
+        ice->err = Packtet_Size_Err;
     }
-    else if (ice->rx[HEAD] != ICE_UART_HEAD) //校验帧头帧尾
-    {
-        ice->error = Head_Or_End_Err;
-    }
-    else if (ice->rx[CHECK] != (uint8_t)(ice->rx[HEAD] ^ ice->rx[CMD] ^ ice->rx[ADDR] ^ ice->rx[DB1] ^ ice->rx[DB2])) //校验方式: 异或校验， CHECK 位前
-    {
-        ice->error = Check_Err;
-    }
-
-    if (ice->error)
-        ok = 0;
-
-    return ok;
 }
 
 /**
@@ -89,17 +71,6 @@ static void clear(IceUart *ice)
     ice->rx_flag = 0;
 }
 
-/**
-* @brief send data
-* @param ice
-*/
-static void sendData(IceUart *ice)
-{
-    //todo 发送函数
-
-    uart_transmit(ice->huart, ice->tx, ICE_UART_SIZE);
-}
-
 
 /**
 * @brief uart init
@@ -108,25 +79,27 @@ static void uart_init(IceUart *ice)
 {
 #ifdef ICE_GD32F30X
     /* enable GPIO clock */
-    rcu_periph_clock_enable(RCU_GPIOA);
+    rcu_periph_clock_enable(ICE_UARTx_RCU2);
 
     /* enable USART clock */
-    rcu_periph_clock_enable(RCU_USART0);
+    rcu_periph_clock_enable(ICE_UARTx_RCU1);
 
-    /* connect port to USARTx_Tx */ //PA9
-    gpio_init(GPIOA, GPIO_MODE_AF_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_9);
+    /* connect port to USARTx_Tx */ //
+    gpio_init(ICE_UARTx_Port, GPIO_MODE_AF_PP, GPIO_OSPEED_50MHZ, ICE_UARTx_Tx_Pin);
 
-    /* connect port to USARTx_Rx */ //PA10
-    gpio_init(GPIOA, GPIO_MODE_IN_FLOATING, GPIO_OSPEED_50MHZ, GPIO_PIN_10);
+    /* connect port to USARTx_Rx */ //
+    gpio_init(ICE_UARTx_Port, GPIO_MODE_IN_FLOATING, GPIO_OSPEED_50MHZ, ICE_UARTx_Rx_Pin);
 
     /* USART configure */
     usart_deinit(ice->huart);
-    usart_baudrate_set(ice->huart, 115200U);
+    usart_baudrate_set(ice->huart, ICE_UART_BAUD);
     usart_receive_config(ice->huart, USART_RECEIVE_ENABLE);
     usart_transmit_config(ice->huart, USART_TRANSMIT_ENABLE);
     usart_enable(ice->huart);
 
     usart_interrupt_enable(ice->huart, USART_INT_IDLE); //开启空闲中断
+
+    usart_dma_receive_config(ice->huart, USART_DENR_ENABLE);  //USART配置DMA接收
 #endif
 
 }
@@ -141,26 +114,25 @@ static void uart_dma_init(IceUart *ice)
 /*****************  DMA_RX_CONFIG   ****************/
     dma_parameter_struct dma_init_struct;
     /* enable the DMA clock */
-    rcu_periph_clock_enable(RCU_DMA0);
+    rcu_periph_clock_enable(ICE_UARTx_DMAx_RCU);
 
     /* configure the USART RX DMA channel */
-    dma_deinit(DMA0, DMA_CH4);
+    dma_deinit(ICE_UARTx_DMAx, ICE_UARTx_DMAx_Rx_CH);
     //dma_struct_para_init(&dma_init_struct);
     dma_init_struct.direction = DMA_PERIPHERAL_TO_MEMORY;
     dma_init_struct.memory_addr = (uint32_t)ice->rx;
     dma_init_struct.memory_inc = DMA_MEMORY_INCREASE_ENABLE;
     dma_init_struct.memory_width = DMA_MEMORY_WIDTH_8BIT;
-    dma_init_struct.number = ICE_DMA_SIZE;
+    dma_init_struct.number = ICE_UART_DMA_SIZE;
     dma_init_struct.periph_addr = ((uint32_t)&USART_DATA(ice->huart));
     dma_init_struct.periph_inc = DMA_PERIPH_INCREASE_DISABLE;
     dma_init_struct.periph_width = DMA_PERIPHERAL_WIDTH_8BIT;
     dma_init_struct.priority = DMA_PRIORITY_LOW;
-    dma_init(DMA0, DMA_CH4, &dma_init_struct);
+    dma_init(ICE_UARTx_DMAx, ICE_UARTx_DMAx_Rx_CH, &dma_init_struct);
     /* configure DMA mode */
-    dma_circulation_enable(DMA0, DMA_CH4);
+    dma_circulation_enable(ICE_UARTx_DMAx, ICE_UARTx_DMAx_Rx_CH);
     /*****************  END  DMA_RX_CONFIG  ****************/
-    dma_channel_enable(DMA0, DMA_CH4);
-    usart_dma_receive_config(ice->huart, USART_DENR_ENABLE);  //USART配置DMA接收
+    dma_channel_enable(ICE_UARTx_DMAx, ICE_UARTx_DMAx_Rx_CH);
 #endif
 }
 
@@ -188,9 +160,9 @@ static void uart_transmit(uint32_t huart, uint8_t *pData, uint16_t Size)
 static void uart_receive_dma(IceUart *ice)
 {
 #ifdef ICE_GD32F30X
-    dma_memory_address_config(DMA0, DMA_CH4, (uint32_t)ice->rx);
-    dma_transfer_number_config(DMA0, DMA_CH4, ICE_DMA_SIZE);
-    dma_channel_enable(DMA0, DMA_CH4);
+    dma_memory_address_config(ICE_UARTx_DMAx, ICE_UARTx_DMAx_Rx_CH, (uint32_t)ice->rx);
+    dma_transfer_number_config(ICE_UARTx_DMAx, ICE_UARTx_DMAx_Rx_CH, ICE_UART_DMA_SIZE);
+    dma_channel_enable(ICE_UARTx_DMAx, ICE_UARTx_DMAx_Rx_CH);
 #endif
 }
 
@@ -204,8 +176,8 @@ void ice_uart_it_callback(IceUart *ice)
     {
         usart_interrupt_flag_clear(ice->huart, USART_INT_FLAG_IDLE); //清除空闲中断标志
         usart_data_receive(ice->huart); //清除接收完成标志
-        dma_channel_disable(DMA0, DMA_CH4);  //CHEN位为0时才能配置DMA
-        ice->rx_len = ICE_DMA_SIZE - dma_transfer_number_get(DMA0, DMA_CH4);
+        dma_channel_disable(ICE_UARTx_DMAx, ICE_UARTx_DMAx_Rx_CH);  //CHEN位为0时才能配置DMA
+        ice->rx_len = ICE_UART_DMA_SIZE - dma_transfer_number_get(ICE_UARTx_DMAx, ICE_UARTx_DMAx_Rx_CH);
         ice->rx_flag = 1;
     }
 #endif
@@ -217,13 +189,13 @@ void ice_uart_it_callback(IceUart *ice)
 void ice_uart_init(IceUart *ice)
 {
 #ifdef ICE_GD32F30X
-    ice->huart = USART0;
+    ice->huart = ICE_UARTx;
 
     uart_init(ice); //gd32 uart init
     uart_dma_init(ice); //gd32 uart's dma init
 
     //串口中断使能
-    nvic_irq_enable(USART0_IRQn, 3, 3);
+    nvic_irq_enable(ICE_UARTx_IRQn, 3, 3);
 #endif
 }
 
@@ -234,57 +206,16 @@ void ice_uart_task(IceUart *ice)
 {
     if (ice->rx_flag) //received data
     {
-        ice->error = Ack_OK;
-        uint8_t ok = isChecked(ice); //校验数据
+        check(ice); //校验数据
 
-        if (ok) //校验通过
+        if (ice->err == Ack_OK) //校验通过
         {
-            switch (ice->rx[CMD])
-            {
-                case 0x01:
-                    cmd_0x01_handle(ice);
-                    break;
-                case 0x02:
-                    cmd_0x02_handle(ice);
-                    break;
-                case 0x03:
-                    cmd_0x03_handle(ice);
-                    break;
-                default:
-                    ice->error = CMD_Err; //不存在对应的指令
-                    break;
-            }
+
         }
+        uart_transmit(ice->huart, ice->rx, ice->rx_len); //回环测试
         clear(ice);
         uart_receive_dma(ice); //开启新的dma接收
     }
-}
-
-/**
-* @brief
-* @param ice
-*/
-void cmd_0x01_handle(IceUart *ice)
-{
-
-}
-
-/**
-* @brief
-* @param ice
-*/
-void cmd_0x02_handle(IceUart *ice)
-{
-
-}
-
-/**
-* @brief
-* @param ice
-*/
-void cmd_0x03_handle(IceUart *ice)
-{
-
 }
 
 #endif
