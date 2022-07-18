@@ -145,12 +145,12 @@
 #if ICE_UART
 #define ICE_UART_BAUD           (115200U) //uart baud
 #define ICE_UART_DMA_SIZE       (256)     //uart dma rx size DMA接收区缓冲大小
-#define ICE_PACKET_SIZE         (6)       //packet size 一帧数据大小
+#define ICE_UART_PACKET_SIZE    (6)       //packet size 一帧数据大小
 //-------------------------------------------------
 #ifdef  ICE_GD32F30X
-#define ICE_UARTx               (USART1)    //USARTx, USART1, TX:PA2, RX:PA3, RX_DMA: DMA0_CH5
-#define ICE_UARTx_RCU1          (RCU_USART1)
-#define ICE_UARTx_IRQn          (USART1_IRQn)
+#define ICE_UARTx               (USART1)    //USARTx,   //USART0, TX:PA9,  RX:PA10, RX_DMA: DMA0_CH4
+#define ICE_UARTx_RCU1          (RCU_USART1)            //USART1, TX:PA2,  RX:PA3,  RX_DMA: DMA0_CH5
+#define ICE_UARTx_IRQn          (USART1_IRQn)           //USART2, TX:PB10, RX:PB11, RX_DMA: DMA0_CH2
 #define ICE_UARTx_RCU2          (RCU_GPIOA)
 #define ICE_UARTx_Port          (GPIOA)
 #define ICE_UARTx_Tx_Pin        (GPIO_PIN_2)

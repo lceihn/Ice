@@ -53,7 +53,7 @@ static void check(IceUart *ice)
     ice->err = Ack_OK;
 
     //接收校验
-    if (ice->rx_len != ICE_PACKET_SIZE) //接收数据大小:?
+    if (ice->rx_len != ICE_UART_PACKET_SIZE) //接收数据大小:?
     {
         ice->err = Packtet_Size_Err;
     }
