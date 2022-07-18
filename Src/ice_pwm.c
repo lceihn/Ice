@@ -63,40 +63,41 @@ void ice_pwm_init()
     timer_channel_output_pulse_value_config(ICE_PWM_TIMER, ICE_PWM_CH, ICE_PWM_PERIOD / 2);
     timer_channel_output_mode_config(ICE_PWM_TIMER, ICE_PWM_CH, TIMER_OC_MODE_PWM0);
     timer_channel_output_shadow_config(ICE_PWM_TIMER, ICE_PWM_CH, TIMER_OC_SHADOW_DISABLE);
-
+    
+    timer_primary_output_config(ICE_PWM_TIMER,ENABLE); //GD32é«˜çº§å®šæ—¶å™¨(TIMER0)è¦ä½¿ç”¨PWMè¾“å‡º éœ€è¦æ·»åŠ è¿™ä¸€å¥
     /* auto-reload preload enable */
     timer_auto_reload_shadow_enable(ICE_PWM_TIMER);
     /* auto-reload preload enable */
     timer_enable(ICE_PWM_TIMER);
 #endif
 #ifdef ICE_RP2040
-    //GPIO ¸´ÓÃÎªPWMÊä³ö
+    //GPIO å¤ç”¨ä¸ºPWMè¾“å‡º
     gpio_set_function(ICE_PWM_Pin, GPIO_FUNC_PWM);
-    //»ñÈ¡¶ÔÓ¦µÄPWMÍ¨µÀ
+    //è·å–å¯¹åº”çš„PWMé€šé“
     uint slice_num = pwm_gpio_to_slice_num(ICE_PWM_Pin);
-    //Ä¬ÈÏ²»·ÖÆµ
+    //é»˜è®¤ä¸åˆ†é¢‘
 //    pwm_set_clkdiv_int_frac(slice_num, 0, 0);
-    //ÉèÖÃ¶ÔÓ¦ÍâÉèÊ±ÖÓ·ÖÆµÊı, ÕâÀïÉèÖÃ¼ÆÊıÖÜÆÚÎª100MHz, 10ns, 125/1.25=100MHz
+    //è®¾ç½®å¯¹åº”å¤–è®¾æ—¶é’Ÿåˆ†é¢‘æ•°, è¿™é‡Œè®¾ç½®è®¡æ•°å‘¨æœŸä¸º100MHz, 10ns, 125/1.25=100MHz
 //    pwm_set_clkdiv_int_frac(slice_num, 1, 4);
-    //ÉèÖÃ±È½ÏÖµÖ®Ç°Îª¸ßµçÆ½Êä³ö, Ä¬ÈÏ¾ÍÊÇ¸ßµçÆ½Êä³ö, ²»ĞèÒªÉèÖÃ
+    //è®¾ç½®æ¯”è¾ƒå€¼ä¹‹å‰ä¸ºé«˜ç”µå¹³è¾“å‡º, é»˜è®¤å°±æ˜¯é«˜ç”µå¹³è¾“å‡º, ä¸éœ€è¦è®¾ç½®
 //    pwm_set_output_polarity(slice_num, false, false);
-    //ÉèÖÃPWMÖÜÆÚÎª125¸ö¼ÆÊıÖÜÆÚ, 125 * 10 = 1250 ns = 800kHz
+    //è®¾ç½®PWMå‘¨æœŸä¸º125ä¸ªè®¡æ•°å‘¨æœŸ, 125 * 10 = 1250 ns = 800kHz
     pwm_set_wrap(slice_num, ICE_PWM_PERIOD);
-    //ÉèÖÃÕ¼¿Õ±ÈÎª50%
+    //è®¾ç½®å ç©ºæ¯”ä¸º50%
     pwm_set_gpio_level(ICE_PWM_Pin, ICE_PWM_PERIOD / 2);
-    //ÅäÖÃPWMÖĞ¶ÏºÍPWMÃ¿¸öÖÜÆÚ½áÊøµÄ»Øµ÷º¯Êı
+    //é…ç½®PWMä¸­æ–­å’ŒPWMæ¯ä¸ªå‘¨æœŸç»“æŸçš„å›è°ƒå‡½æ•°
 //    pwm_clear_irq(slice_num);
 //    pwm_set_irq_enabled(slice_num, true);
 //    irq_set_exclusive_handler(PWM_IRQ_WRAP, PWM_PeriodFinishedCallback);
 //    irq_set_enabled(PWM_IRQ_WRAP, true);
-    //PWMÊ¹ÄÜ
+    //PWMä½¿èƒ½
     pwm_set_enabled(slice_num, true);
 #endif
 }
 
 /**
-* @brief ÉèÖÃ PWMÕ¼¿Õ±È
-* @param cyc ÒªÉèÖÃµÄÕ¼¿Õ±È 0 ~ 100 %
+* @brief è®¾ç½® PWMå ç©ºæ¯”
+* @param cyc è¦è®¾ç½®çš„å ç©ºæ¯” 0 ~ 100 %
 */
 void ice_pwm_set_cycle(uint8_t cyc)
 {
@@ -107,8 +108,8 @@ void ice_pwm_set_cycle(uint8_t cyc)
 }
 
 /**
-* @brief ÉèÖÃPWMµÄ±È½ÏÖµ
-* @param val PWM ±È½ÏÖµ
+* @brief è®¾ç½®PWMçš„æ¯”è¾ƒå€¼
+* @param val PWM æ¯”è¾ƒå€¼
 */
 void ice_pwm_set_value(uint16_t val)
 {
