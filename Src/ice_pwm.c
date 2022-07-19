@@ -2,17 +2,17 @@
 
 #if ICE_PWM
 
-#ifdef ICE_GD32F30X
-inline static void set_pwm_value(uint16_t pwm_value) {
-    timer_channel_output_pulse_value_config(ICE_PWM_TIMER, ICE_PWM_CH, pwm_value);
-}
-#endif
+static void set_pwm_value(uint16_t pwm_value);
 
-#ifdef ICE_RP2040
-__force_inline static void set_pwm_value(uint16_t pwm_value) {
-    pwm_set_gpio_level(ICE_PWM_Pin, pwm_value);
-}
+void set_pwm_value(uint16_t pwm_value)
+{
+#ifdef ICE_GD32F30X
+    timer_channel_output_pulse_value_config(ICE_PWM_TIMER, ICE_PWM_CH, pwm_value);
 #endif
+#ifdef ICE_RP2040
+    pwm_set_gpio_level(ICE_PWM_Pin, pwm_value);
+#endif
+}
 
 /**
 * @brief pwm init
@@ -27,7 +27,7 @@ void ice_pwm_init()
 //    gpio_pin_remap_config(GPIO_ICE_TIMER_FULL_REMAP, ENABLE);
 
     /*Configure PB10 (ICE_TIMER CH1) as alternate function*/
-    gpio_init(ICE_PWM_Port, GPIO_MODE_AF_PP, GPIO_OSPEED_50MHZ, ICE_PWM_Pin); //PB0 -> ICE_TIMER_CH2
+    gpio_init(ICE_PWM_Port, GPIO_MODE_AF_PP, GPIO_OSPEED_50MHZ, ICE_PWM_Pin);
 
     /* -----------------------------------------------------------------------
     TIMER CLK = SystemCoreClock = 120MHz
@@ -60,7 +60,7 @@ void ice_pwm_init()
     timer_channel_output_config(ICE_PWM_TIMER, ICE_PWM_CH, &timer_ocintpara);
 
     /* CH2 configuration in PWM mode0 */
-    timer_channel_output_pulse_value_config(ICE_PWM_TIMER, ICE_PWM_CH, ICE_PWM_PERIOD / 2);
+    timer_channel_output_pulse_value_config(ICE_PWM_TIMER, ICE_PWM_CH, (ICE_PWM_PERIOD >> 1U));
     timer_channel_output_mode_config(ICE_PWM_TIMER, ICE_PWM_CH, TIMER_OC_MODE_PWM0);
     timer_channel_output_shadow_config(ICE_PWM_TIMER, ICE_PWM_CH, TIMER_OC_SHADOW_DISABLE);
     
