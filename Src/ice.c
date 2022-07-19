@@ -4,6 +4,9 @@
 #if ICE_UART
 IceUart ice_uart;
 #endif
+#if ICE_SPI
+IceSpi ice_spi;
+#endif
 
 
 void ice_init()

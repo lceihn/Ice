@@ -29,6 +29,9 @@
 #if ICE_UART
 extern IceUart ice_uart;
 #endif
+#if ICE_SPI
+extern IceSpi ice_spi;
+#endif
 
 
 /************ Function ***********/
@@ -96,6 +99,7 @@ void ice_uart_task(IceUart *ice);		 //process uart receive task
 #if ICE_SPI
 void ice_spi_init();
 void ice_spi_write(uint8_t *buf, uint16_t len);
+void ice_spi_task(IceSpi *ice);
 #endif
 
 #if ICE_ADC

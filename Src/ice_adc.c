@@ -13,8 +13,8 @@ void ice_adc_init()
     rcu_adc_clock_config(RCU_CKADC_CKAPB2_DIV6);
 
     /* config the GPIO as analog mode */
-    gpio_init(GPIOA, GPIO_MODE_AIN, GPIO_OSPEED_10MHZ, ADC_CURT_Pin); //电流adc
-    gpio_init(GPIOA, GPIO_MODE_AIN, GPIO_OSPEED_10MHZ, ADC_VR_Pin); //反向检波电压adc
+    gpio_init(GPIOA, GPIO_MODE_AIN, GPIO_OSPEED_10MHZ, ADC_CURT_Pin);
+    gpio_init(GPIOA, GPIO_MODE_AIN, GPIO_OSPEED_10MHZ, ADC_VR_Pin);
 
     /* ADC mode config */
     adc_mode_config(ADC_MODE_FREE);

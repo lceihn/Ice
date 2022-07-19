@@ -168,6 +168,36 @@ void EXTI10_15_IRQHandler(void)
 }
 #endif
 
+#if ICE_SPI
+void DMA0_Channel3_IRQHandler(void)
+{
+#if (ICE_SPI_MODE == ICE_SPI_SLAVE)
+    if ((DMA_INTF(ICE_SPIx_DMAx) & DMA_FLAG_ADD(DMA_INT_HTF, ICE_SPIx_DMAx_Rx_CH))) //接收通道x半传输完成
+    {
+        DMA_INTC(ICE_SPIx_DMAx) |= DMA_FLAG_ADD(DMA_INT_HTF, ICE_SPIx_DMAx_Rx_CH); //清除中断标志位
+
+        if (ice_spi.rx[0] & 0x8000) //读
+        {
+            SPI_CTL0(ICE_SPIx) &= (uint32_t)(~SPI_CTL0_SPIEN);  //要改变SPI配置参数 就必须先失能SPI 修改后再使能
+            SPI_CTL0(ICE_SPIx) |= 0x00000001;
+            SPI_CTL0(ICE_SPIx) |= (uint32_t)SPI_CTL0_SPIEN;
+        }
+    }
+    else if ((DMA_INTF(ICE_SPIx_DMAx) & DMA_FLAG_ADD(DMA_INT_FTF, ICE_SPIx_DMAx_Rx_CH)))//接收通道x传输完成
+    {
+        DMA_INTC(ICE_SPIx_DMAx) |= DMA_FLAG_ADD(DMA_INT_FTF, ICE_SPIx_DMAx_Rx_CH); //清除中断标志位
+
+        DMA_CHCTL(ICE_SPIx_DMAx, ICE_SPIx_DMAx_Rx_CH) &= ~DMA_CHXCTL_CHEN; //dma disable
+        SPI_CTL0(ICE_SPIx) &= (uint32_t)(~SPI_CTL0_SPIEN);  //要改变SPI配置参数 就必须先失能SPI 修改后再使能
+        SPI_CTL0(ICE_SPIx) &= 0xFFFFFFFE;
+        SPI_CTL0(ICE_SPIx) |= (uint32_t)SPI_CTL0_SPIEN;
+        spi_write(ICE_SPIx, 0);
+        ice_spi.rx_flag = 1;
+    }
+#endif
+}
+#endif
+
 #endif
 
 

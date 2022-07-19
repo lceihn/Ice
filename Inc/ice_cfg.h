@@ -28,7 +28,7 @@
 #define ICE_GPIO    0  //GPIO
 #define ICE_EXTI    0  //外部中断
 #define ICE_UART    0  //串口
-#define ICE_PWM     1  //PWM
+#define ICE_PWM     0  //PWM
 #define ICE_SPI     0  //SPI
 #define ICE_I2C     0  //I2C
 #define ICE_ADC     0  //ADC
@@ -162,8 +162,32 @@
 #endif
 //************** SPI 配置 ********************************************************************************************//
 #if ICE_SPI
+#define ICE_SPI_MASTER  (0)
+#define ICE_SPI_SLAVE   (1)
+#define ICE_SPI_MODE    ICE_SPI_MASTER //选择spi主/从?
 //-------------------------------------------------
 #ifdef ICE_GD32F30X
+#define ICE_SPIx                (SPI1)
+#define ICE_SPIx_RCU1           (RCU_SPI1)
+#define ICE_SPIx_RCU2           (RCU_GPIOB)
+#define ICE_SPIx_Port           (GPIOB)
+#define ICE_SPIx_CS_Pin         (GPIO_PIN_12)
+#define ICE_SPIx_SCK_Pin        (GPIO_PIN_13)
+#define ICE_SPIx_MISO_Pin       (GPIO_PIN_14)
+#define ICE_SPIx_MOSi_Pin       (GPIO_PIN_15)
+__STATIC_INLINE void spi_write(uint32_t spi_periph, uint16_t data) {
+    while(!(SPI_STAT(spi_periph) & SPI_FLAG_TBE));
+    SPI_DATA(spi_periph) = data;
+}
+#if (ICE_SPI_MODE == ICE_SPI_SLAVE) //spi从机采用dma接收
+#define ICE_SPIx_DMAx           (DMA0)
+#define ICE_SPIx_DMAx_RCU       (RCU_DMA0)
+#define ICE_SPIx_DMAx_SIZE      (2)     //DMA size
+#define ICE_SPIx_DMAx_Rx_CH     (DMA_CH3)
+#define ICE_SPIx_DMAx_Rx_IRQn   (DMA0_Channel3_IRQn)
+#else
+
+#endif
 #endif
 #ifdef ICE_STM32
 #endif

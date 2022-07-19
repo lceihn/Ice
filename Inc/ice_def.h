@@ -38,6 +38,14 @@ typedef struct
     uint8_t err;                    //ice uart error
 }IceUart;
 #endif
+#if ICE_SPI /* spi defines */
+#define ICE_SPI_BUF_SIZE (2)
+typedef struct {
+    uint16_t tx[ICE_SPI_BUF_SIZE];  // 发送数据
+    uint16_t rx[ICE_SPI_BUF_SIZE];  // 接收数据
+    uint8_t rx_flag;                // 接收标志
+}IceSpi;
+#endif
 //--------------------------------------------------------------------------------------------------------------------//
 #define ICE_ASSERT(EXPR)                                                      \
 if (!(EXPR))                                                                  \
