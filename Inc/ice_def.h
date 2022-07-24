@@ -29,8 +29,12 @@ typedef enum
 /* ice uart structure */
 typedef struct
 {
-    //UART_HandleTypeDef *huart;      //pointer to stm32 huart x
+#ifdef ICE_STM32
+    UART_HandleTypeDef *huart;      //pointer to stm32 huart x
+#endif
+#ifdef ICE_GD32F30X
     uint32_t huart;                 //gd32 usartx
+#endif
     uint8_t rx[ICE_UART_DMA_SIZE];  //ice uart receive data buffer(maxlength:256)
     uint8_t rx_flag;                //ice uart rx flag, 0:wait for receive, 1:received packet data
     uint8_t rx_len;                 //ice uart actually receive packet length

@@ -13,7 +13,7 @@
 #define _ICE_CFG_H
 
 /*** 配置芯片的的型号, 目前支持3种, STM32系列, GD32F30X系列, RP2040(树莓派Pico) ***/
-#define ICE_GD32F30X
+//#define ICE_GD32F30X
 //#define ICE_STM32
 //#define ICE_RP2040
 #if (defined (ICE_GD32F30X) + defined (ICE_STM32) + defined (ICE_RP2040) > 1)
@@ -38,11 +38,15 @@
 #define ICE_UART_DEBUG      0   //启用 printf 重定向至串口
 #define ICE_EF_DEBUG        0   //使能 easyflash 打印输出
 
-
+//添加各个平台的库文件
 #ifdef ICE_GD32F30X
 #include "gd32f30x.h"
 #include "gd32f30x_libopt.h"
 //#include "gd32f30x_it.h"
+#endif
+
+#ifdef ICE_STM32
+#include "main.h"
 #endif
 
 #ifdef ICE_RP2040
@@ -117,6 +121,10 @@
 #endif
 //-------------------------------------------------
 #ifdef ICE_STM32
+#include "gpio.h"
+#define LED_Port    GPIOA
+#define LED_Pin     GPIO_PIN_2
+#define LED(x)      HAL_GPIO_WritePin(LED_Port, LED_Pin, x)
 #endif
 //-------------------------------------------------
 #ifdef ICE_RP2040
@@ -159,6 +167,14 @@
 #define ICE_UARTx_DMAx_RCU      (RCU_DMA0)
 #define ICE_UARTx_DMAx_Rx_CH    (DMA_CH5)
 #endif
+
+#ifdef ICE_STM32
+#include "dma.h"
+#include "usart.h"
+
+#define ICE_UARTx huart1
+#endif
+
 #endif
 //************** SPI 配置 ********************************************************************************************//
 #if ICE_SPI

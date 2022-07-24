@@ -48,7 +48,7 @@ PUTCHAR_PROTOTYPE
  * @param  ice              
  * @return 
  */
-static void check(IceUart *ice)
+void check(IceUart *ice)
 {
     ice->err = Ack_OK;
 
@@ -63,7 +63,7 @@ static void check(IceUart *ice)
  * @brief 将接收缓冲区内容清0, 清空接收标志位
  * @param ice_buf
  */
-static void clear(IceUart *ice)
+void clear(IceUart *ice)
 {
     for (uint8_t i = 0; i < ice->rx_len; ++i)
         ice->rx[i] = 0;
@@ -142,7 +142,7 @@ static void uart_dma_init(IceUart *ice)
 * @param pData 数据指针
 * @param Size 数据大小
 */
-static void uart_transmit(uint32_t huart, uint8_t *pData, uint16_t Size)
+void uart_transmit(uint32_t huart, uint8_t *pData, uint16_t Size)
 {
 #ifdef ICE_GD32F30X
     for (int i = 0; i < Size; ++i)
@@ -153,16 +153,20 @@ static void uart_transmit(uint32_t huart, uint8_t *pData, uint16_t Size)
 #endif
 }
 
+
 /**
 * @brief
 * @param ice
 */
-static void uart_receive_dma(IceUart *ice)
+void uart_receive_dma(IceUart *ice)
 {
 #ifdef ICE_GD32F30X
     dma_memory_address_config(ICE_UARTx_DMAx, ICE_UARTx_DMAx_Rx_CH, (uint32_t)ice->rx);
     dma_transfer_number_config(ICE_UARTx_DMAx, ICE_UARTx_DMAx_Rx_CH, ICE_UART_DMA_SIZE);
     dma_channel_enable(ICE_UARTx_DMAx, ICE_UARTx_DMAx_Rx_CH);
+#endif
+#ifdef ICE_STM32
+    HAL_UART_Receive_DMA(ice->huart, ice->rx, ICE_UART_DMA_SIZE);   //start uart dma receive
 #endif
 }
 
@@ -181,6 +185,19 @@ void ice_uart_it_callback(IceUart *ice)
         ice->rx_flag = 1;
     }
 #endif
+#ifdef ICE_STM32
+    if (__HAL_UART_GET_FLAG(ice->huart, UART_FLAG_IDLE) != RESET)  //接收到1帧数据触发空闲中断
+    {
+        __HAL_UART_CLEAR_IDLEFLAG(ice->huart);    //clear idle flag
+
+        if (ice->rx_flag == 0) //1:busy(processing uart data)
+        {
+            ice->rx_len = ICE_UART_DMA_SIZE - __HAL_DMA_GET_COUNTER(ice->huart->hdmarx); //获取接收到的数据长度
+            HAL_UART_DMAStop(ice->huart); //停止DMA接收, 处理完数据之后再打开
+            ice->rx_flag = 1;             //标记接收到1帧数据
+        }
+    }
+#endif
 }
 
 /**
@@ -197,6 +214,12 @@ void ice_uart_init(IceUart *ice)
     //串口中断使能
     nvic_irq_enable(ICE_UARTx_IRQn, 3, 3);
 #endif
+#ifdef ICE_STM32
+    ice->huart = &ICE_UARTx;
+
+    __HAL_UART_ENABLE_IT(ice->huart, UART_IT_IDLE); //enable idle
+    HAL_UART_Receive_DMA(ice->huart, ice->rx, ICE_UART_DMA_SIZE);   //start uart dma receive
+#endif
 }
 
 /**
@@ -212,7 +235,12 @@ void ice_uart_task(IceUart *ice)
         {
 
         }
+#ifdef ICE_GD32F30X
         uart_transmit(ice->huart, ice->rx, ice->rx_len); //回环测试
+#endif
+#ifdef ICE_STM32
+        HAL_UART_Transmit(ice->huart, ice->rx, ice->rx_len, HAL_MAX_DELAY); //回环测试
+#endif
         clear(ice);
         uart_receive_dma(ice); //开启新的dma接收
     }
