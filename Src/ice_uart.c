@@ -175,6 +175,24 @@ void uart_receive_dma(IceUart *ice)
  */
 void ice_uart_it_callback(IceUart *ice)
 {
+#if ICE_FREERTOS
+#ifdef ICE_STM32
+    if (__HAL_UART_GET_FLAG(ice->huart, UART_FLAG_IDLE) != RESET)  //接收到1帧数据触发空闲中断
+    {
+        __HAL_UART_CLEAR_IDLEFLAG(ice->huart);    //clear idle flag
+
+        ice->rx_len = ICE_UART_DMA_SIZE - __HAL_DMA_GET_COUNTER(ice->huart->hdmarx); //获取接收到的数据长度
+        HAL_UART_DMAStop(ice->huart); //停止DMA接收, 处理完数据之后再打开
+
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+        /* 发送任务通知 */
+        vTaskNotifyGiveFromISR(uart_taskHandle, &xHigherPriorityTaskWoken);
+        /* 如果xHigherPriorityTaskWoken = pdTRUE，那么退出中断后切到当前最高优先级任务执行 */
+        portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+    }
+#endif
+
+#else
 #ifdef ICE_GD32F30X
     if(RESET != usart_interrupt_flag_get(ice->huart, USART_INT_FLAG_IDLE)) //检测到空闲线
     {
@@ -197,6 +215,7 @@ void ice_uart_it_callback(IceUart *ice)
             ice->rx_flag = 1;             //标记接收到1帧数据
         }
     }
+#endif
 #endif
 }
 
@@ -227,6 +246,31 @@ void ice_uart_init(IceUart *ice)
  */
 void ice_uart_task(IceUart *ice)
 {
+#if ICE_FREERTOS
+    /*
+        函数ulTaskNotifyTake第一个参数说明：
+        1. 此参数设置为pdFALSE，任务vTaskMsgPro的TCB(任务控制块)中的变量ulNotifiedValue减一
+        2. 此参数设置为pdTRUE，任务vTaskMsgPro的TCB(任务控制块)中的变量ulNotifiedValue清零
+    */
+    uint32_t notice = ulTaskNotifyTake(pdTRUE, portMAX_DELAY); //获取任务计数信号量
+    if (notice == 1) //received data
+    {
+        check(ice); //校验数据
+
+        if (ice->err == Ack_OK) //校验通过
+        {
+
+        }
+#ifdef ICE_GD32F30X
+        uart_transmit(ice->huart, ice->rx, ice->rx_len); //回环测试
+#endif
+#ifdef ICE_STM32
+        HAL_UART_Transmit(ice->huart, ice->rx, ice->rx_len, HAL_MAX_DELAY); //回环测试
+#endif
+        clear(ice);
+        uart_receive_dma(ice); //开启新的dma接收
+    }
+#else
     if (ice->rx_flag) //received data
     {
         check(ice); //校验数据
@@ -244,6 +288,7 @@ void ice_uart_task(IceUart *ice)
         clear(ice);
         uart_receive_dma(ice); //开启新的dma接收
     }
+#endif
 }
 
 #endif

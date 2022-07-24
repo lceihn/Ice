@@ -35,6 +35,7 @@
 #define ICE_PIO     0  //PIO
 
 /************ 附加功能 ************/
+#define ICE_FREERTOS        0   //启用freeRTOS
 #define ICE_UART_DEBUG      0   //启用 printf 重定向至串口
 #define ICE_EF_DEBUG        0   //使能 easyflash 打印输出
 
@@ -104,6 +105,14 @@
 #ifdef ICE_RP2040
 #define ICE_SYS_CLK     (125 * 1000 * 1000)  //主频125MHz
 #define PLL_SYS_KHZ     (ICE_SYS_CLK / 1000)
+#endif
+//-------------------------------------------------
+#if ICE_FREERTOS
+#include "FreeRTOS.h"
+#include "task.h"
+#ifdef ICE_STM32
+#include "cmsis_os.h"
+#endif
 #endif
 
 //************** 看门狗 配置 *****************************************************************************************//
