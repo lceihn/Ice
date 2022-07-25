@@ -51,11 +51,12 @@ typedef struct {
 }IceSpi;
 #endif
 //--------------------------------------------------------------------------------------------------------------------//
-#define ICE_ASSERT(EXPR)                                                      \
-if (!(EXPR))                                                                  \
-{                                                                             \
-    while (1);                                                                \
-}
+//#define ICE_ASSERT(EXPR)                                                      \
+//if (!(EXPR))                                                                  \
+//{                                                                             \
+//    while (1);                                                                \
+//}
+#define ICE_ASSERT(...)
 
 
 #endif //_ICE_DEF_H
