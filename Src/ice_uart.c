@@ -190,7 +190,24 @@ void ice_uart_it_callback(IceUart *ice)
         /* 如果xHigherPriorityTaskWoken = pdTRUE，那么退出中断后切到当前最高优先级任务执行 */
         portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
     }
-#endif
+#endif //ICE_STM32
+
+#ifdef ICE_GD32F30X
+    if(RESET != usart_interrupt_flag_get(ice->huart, USART_INT_FLAG_IDLE)) //检测到空闲线
+    {
+        usart_interrupt_flag_clear(ice->huart, USART_INT_FLAG_IDLE); //清除空闲中断标志
+        usart_data_receive(ice->huart); //清除接收完成标志, 必须加不然会一直 进空闲中断
+        dma_channel_disable(ICE_UARTx_DMAx, ICE_UARTx_DMAx_Rx_CH);  //CHEN位为0时才能配置DMA
+        ice->rx_len = ICE_UART_DMA_SIZE - dma_transfer_number_get(ICE_UARTx_DMAx, ICE_UARTx_DMAx_Rx_CH);
+
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+        /* 发送任务通知 */
+        vTaskNotifyGiveFromISR(huart_handle, &xHigherPriorityTaskWoken);
+        /* 如果xHigherPriorityTaskWoken = pdTRUE，那么退出中断后切到当前最高优先级任务执行 */
+        portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+//        ice->rx_flag = 1;
+    }
+#endif //ICE_GD32F30X
 
 #else
 #ifdef ICE_GD32F30X
@@ -216,7 +233,7 @@ void ice_uart_it_callback(IceUart *ice)
         }
     }
 #endif
-#endif
+#endif //ICE_FREERTOS
 }
 
 /**
@@ -231,7 +248,7 @@ void ice_uart_init(IceUart *ice)
     uart_dma_init(ice); //gd32 uart's dma init
 
     //串口中断使能
-    nvic_irq_enable(ICE_UARTx_IRQn, 3, 3);
+    nvic_irq_enable(ICE_UARTx_IRQn, 15, 0);
 #endif
 #ifdef ICE_STM32
     ice->huart = &ICE_UARTx;

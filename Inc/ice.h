@@ -33,7 +33,10 @@ extern IceUart ice_uart;
 extern IceSpi ice_spi;
 #endif
 #if ICE_FREERTOS
-extern TaskHandle_t htask1;
+extern TaskHandle_t htask1_handle;
+#if ICE_UART
+extern TaskHandle_t huart_handle;
+#endif
 #endif
 
 
