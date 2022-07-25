@@ -29,7 +29,9 @@ void systick_config(void)
  */
 void nvic_config(void)
 {
-    nvic_priority_group_set(NVIC_PRIGROUP_PRE2_SUB2);
+//    nvic_priority_group_set(NVIC_PRIGROUP_PRE2_SUB2);
+    nvic_priority_group_set(NVIC_PRIGROUP_PRE4_SUB0);
+
 
 //    nvic_irq_enable(EXTI5_9_IRQn, 2, 0);
 //    nvic_irq_enable(USART0_IRQn, 3, 3);

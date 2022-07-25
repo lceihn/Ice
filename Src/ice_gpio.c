@@ -22,8 +22,8 @@ void ice_gpio_init()
 //    gpio_pin_remap_config(GPIO_SWJ_SWDPENABLE_REMAP, ENABLE);
 
     /* configure gpio port */
-    gpio_init(VD_SW_Port, GPIO_MODE_OUT_PP, GPIO_OSPEED_10MHZ, VD_SW_Pin);
-    VD_SW(0);
+    gpio_init(GPIOB, GPIO_MODE_OUT_PP, GPIO_OSPEED_10MHZ, LED0_Pin | LED1_Pin);
+    LED0(0);
 #endif
 
 #ifdef ICE_RP2040

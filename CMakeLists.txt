@@ -17,6 +17,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 SET(ds18b20_en 0)       # ds18b20
 SET(easyflash_en 0)     # easyflash
 SET(ws2812_en 0)        # ws2812
+SET(freertos_en 1)      # FreeRTOS
 
 if (ds18b20_en)
     #添加子目录
@@ -45,6 +46,10 @@ if (ws2812_en)
             )
 endif (ws2812_en)
 
+if (freertos_en)
+add_subdirectory(FreeRTOS-Kernel)
+target_link_libraries(${PROJECT_NAME} freertos_kernel)
+endif(freertos_en)
 
 
 

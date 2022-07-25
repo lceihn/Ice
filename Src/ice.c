@@ -54,4 +54,7 @@ void ice_init()
 #if ICE_IWDG
     ice_iwdg_init(); //iwdg init
 #endif
+#if ICE_FREERTOS
+    ice_freertos_init();
+#endif
 }

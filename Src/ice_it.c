@@ -99,7 +99,7 @@ void UsageFault_Handler(void)
     while (1){
     }
 }
-
+#if !ICE_FREERTOS
 /*!
     \brief      this function handles SVC exception
     \param[in]  none
@@ -129,6 +129,7 @@ void DebugMon_Handler(void)
 void PendSV_Handler(void)
 {
 }
+#endif
 
 /*!
     \brief      this function handles SysTick exception
@@ -139,6 +140,16 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
     systick_handler();
+#if ICE_FREERTOS
+#if (INCLUDE_xTaskGetSchedulerState == 1 )
+    if (xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
+    {
+#endif /* INCLUDE_xTaskGetSchedulerState */
+        xPortSysTickHandler();
+#if (INCLUDE_xTaskGetSchedulerState == 1 )
+    }
+#endif /* INCLUDE_xTaskGetSchedulerState */
+#endif //ICE_FREERTOS
 }
 
 #if ICE_UART

@@ -13,7 +13,7 @@
 #define _ICE_CFG_H
 
 /*** 配置芯片的的型号, 目前支持3种, STM32系列, GD32F30X系列, RP2040(树莓派Pico) ***/
-//#define ICE_GD32F30X
+#define ICE_GD32F30X
 //#define ICE_STM32
 //#define ICE_RP2040
 #if (defined (ICE_GD32F30X) + defined (ICE_STM32) + defined (ICE_RP2040) > 1)
@@ -25,7 +25,7 @@
 
 /************ 使能外设 ************/
 #define ICE_IWDG    0  //看门狗
-#define ICE_GPIO    0  //GPIO
+#define ICE_GPIO    1  //GPIO
 #define ICE_EXTI    0  //外部中断
 #define ICE_UART    0  //串口
 #define ICE_PWM     0  //PWM
@@ -35,7 +35,7 @@
 #define ICE_PIO     0  //PIO
 
 /************ 附加功能 ************/
-#define ICE_FREERTOS        0   //启用freeRTOS
+#define ICE_FREERTOS        1   //启用freeRTOS
 #define ICE_UART_DEBUG      0   //启用 printf 重定向至串口
 #define ICE_EF_DEBUG        0   //使能 easyflash 打印输出
 
@@ -124,9 +124,9 @@
 #if ICE_GPIO
 //-------------------------------------------------
 #ifdef ICE_GD32F30X
-    #define VD_SW_Pin     GPIO_PIN_7   //漏压开关
-    #define VD_SW_Port    GPIOA
-    #define VD_SW(x)      gpio_bit_write(VD_SW_Port, VD_SW_Pin, x)
+#define LED0_Pin     GPIO_PIN_8   //
+#define LED0_Port    GPIOB
+#define LED0(x)      gpio_bit_write(LED0_Port, LED0_Pin, x)
 #endif
 //-------------------------------------------------
 #ifdef ICE_STM32

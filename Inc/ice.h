@@ -32,6 +32,9 @@ extern IceUart ice_uart;
 #if ICE_SPI
 extern IceSpi ice_spi;
 #endif
+#if ICE_FREERTOS
+extern TaskHandle_t htask1;
+#endif
 
 
 /************ Function ***********/
@@ -43,26 +46,6 @@ void delay_us(uint32_t us);
 void systick_deinit(void);
 void systick_handler(void);
 void ice_gd32_init();
-
-/* function declarations */
-/* this function handles NMI exception */
-void NMI_Handler(void);
-/* this function handles HardFault exception */
-void HardFault_Handler(void);
-/* this function handles MemManage exception */
-void MemManage_Handler(void);
-/* this function handles BusFault exception */
-void BusFault_Handler(void);
-/* this function handles UsageFault exception */
-void UsageFault_Handler(void);
-/* this function handles SVC exception */
-void SVC_Handler(void);
-/* this function handles DebugMon exception */
-void DebugMon_Handler(void);
-/* this function handles PendSV exception */
-void PendSV_Handler(void);
-/* this function handles SysTick exception */
-void SysTick_Handler(void);
 
 #if ICE_UART
 void USART0_IRQHandler(void);
@@ -133,6 +116,10 @@ void ice_easyflash_init();
 #ifdef ICE_WS2812
 void ws2812_set_color(uint32_t rgb);
 #endif
+
+#if ICE_FREERTOS
+void ice_freertos_init();
+#endif //ICE_FREERTOS
 
 void ice_init();
 
