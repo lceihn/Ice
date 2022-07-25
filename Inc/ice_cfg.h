@@ -127,6 +127,7 @@
 #define LED0_Pin     GPIO_PIN_8   //
 #define LED0_Port    GPIOB
 #define LED0(x)      gpio_bit_write(LED0_Port, LED0_Pin, x)
+#define LED0_IN      gpio_output_bit_get(LED0_Port, LED0_Pin)
 #endif
 //-------------------------------------------------
 #ifdef ICE_STM32
@@ -238,11 +239,25 @@ __STATIC_INLINE void spi_write(__IO uint32_t spi_periph, uint16_t data) {
 #define ICE_ADC_TEMP_SENSOR     (0)  //内部温度传感器使能
 //-------------------------------------------------
 #ifdef ICE_GD32F30X
-    #define ADC_BIT_NUM     (12U)  //GD32F30X 为 12bit adc
-    #define ADC_VR_Pin      GPIO_PIN_2
-    #define ADC_VR_CH       ADC_CHANNEL_2
-    #define ADC_CURT_Pin    GPIO_PIN_4
-    #define ADC_CURT_CH     ADC_CHANNEL_4
+#define ADC_BIT_NUM         (12U)           //GD32F30X 为 12bit adc
+#define ICE_ADCx            (ADC0)          //ADC0, DMA0_CH0
+#define ICE_ADCx_RCU        (RCU_ADC0)      //ADC1, 无DMA通道
+#define ICE_ADCx_DMAx       (DMA0)
+#define ICE_ADCx_DMAx_RCU   (RCU_DMA0)
+#define ICE_ADCx_DMAx_CH    (DMA_CH0)
+#define ICE_ADCx_DMAx_IRQn  (DMA0_Channel0_IRQn)
+#define ICE_ADCx_MAX_NUMS   (18)            //ADC最大通道数
+#define ICE_ADCx_CH_NUMS    (2)             //ADC通道数
+
+#define ADC_VOLT_Port       GPIOA           //PB0: ADC01_IN8, PA2: ADC012_IN2
+#define ADC_VOLT_Pin        GPIO_PIN_2      //PB1: ADC01_IN9, PA3: ADC012_IN3
+#define ADC_VOLT_CH         ADC_CHANNEL_2
+#define ADC_VOLT_RANK       (0)
+
+#define ADC_CURT_Port       GPIOA
+#define ADC_CURT_Pin        GPIO_PIN_3
+#define ADC_CURT_CH         ADC_CHANNEL_3
+#define ADC_CURT_RANK       (1)
 #endif
 //-------------------------------------------------
 #ifdef ICE_STM32

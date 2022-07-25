@@ -32,15 +32,23 @@ extern IceUart ice_uart;
 #if ICE_SPI
 extern IceSpi ice_spi;
 #endif
+#if ICE_ADC
+extern uint16_t ice_adc[ICE_ADCx_MAX_NUMS];
+#endif //ICE_ADC
+
 #if ICE_FREERTOS
-extern TaskHandle_t htask1_handle;
+extern TaskHandle_t hTASK1_handle;
 #if ICE_UART
-extern TaskHandle_t huart_handle;
+extern TaskHandle_t hUART_handle;
 #endif //ICE_UART
 
 #if ICE_SPI
 extern TaskHandle_t hspi_handle;
 #endif //ICE_SPI
+
+#if ICE_ADC
+extern TaskHandle_t hADC_handle;
+#endif //ICE_ADC
 
 #endif //ICE_FREERTOS
 
@@ -95,8 +103,10 @@ void ice_spi_task(IceSpi *ice);
 
 #if ICE_ADC
 void ice_adc_init();
-uint16_t ice_adc_get_value(uint8_t ch);
-uint16_t ice_adc_get_volt(uint8_t ch);
+void ice_adc_task();
+void ice_adc_it_call_back();
+uint16_t ice_adc_get_value(uint8_t rank);
+uint16_t ice_adc_get_volt(uint8_t rank);
 float ice_adc_get_inTemp();
 #endif
 

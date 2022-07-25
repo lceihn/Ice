@@ -2,13 +2,16 @@
 
 #if ICE_FREERTOS
 
-TaskHandle_t htask1_handle = NULL;
+TaskHandle_t hTASK1_handle = NULL;
 #if ICE_UART
-TaskHandle_t huart_handle = NULL;
+TaskHandle_t hUART_handle = NULL;
 #endif //ICE_UART
 #if ICE_SPI
 TaskHandle_t hspi_handle = NULL;
 #endif //ICE_SPI
+#if ICE_ADC
+TaskHandle_t hADC_handle = NULL;
+#endif //ICE_ADC
 
 static void app_task_create();
 static void task1(void *pvParameters);
@@ -20,6 +23,10 @@ static void uart_task(void *pvParameters);
 static void spi_task(void *pvParameters);
 #endif //ICE_SPI
 
+#if ICE_ADC
+static void adc_task(void *pvParameters);
+#endif //ICE_ADC
+
 /**
 * @brief create all task
 */
@@ -30,14 +37,14 @@ void app_task_create()
                  512,       //task stack size unit:word
                  NULL,      //task parameter
                  5,            //task priority
-                 &htask1_handle );      //task handle
+                 &hTASK1_handle );      //task handle
 #if ICE_UART
     xTaskCreate(uart_task,                  //task function
                 "uartTask",         //task
                 512,            //task stack size unit:word
                 NULL,           //task parameter
                 20,                //task priority
-                &huart_handle);             //task handle
+                &hUART_handle);             //task handle
 #endif //ICE_UART
 
 #if ICE_SPI
@@ -48,6 +55,15 @@ void app_task_create()
                 21,                //task priority
                 &hspi_handle);             //task handle
 #endif //ICE_SPI
+
+#if ICE_ADC
+    xTaskCreate(adc_task,                  //task function
+                "adcTask",         //task
+                512,            //task stack size unit:word
+                NULL,           //task parameter
+                19,                //task priority
+                &hADC_handle);             //task handle
+#endif //ICE_ADC
 }
 
 /**
@@ -92,6 +108,21 @@ void spi_task(void *pvParameters)
     }
 }
 #endif //ICE_SPI
+
+#if ICE_ADC
+/**
+* @brief adc dma task, priority:19, stack:512*4(2048)
+* @param pvParameters
+*/
+void adc_task(void *pvParameters)
+{
+    for (;;)
+    {
+        ice_adc_task();
+        vTaskDelay(1000);
+    }
+}
+#endif //ICE_ADC
 
 /**
 * @brief FreeRTOS init

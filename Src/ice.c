@@ -7,6 +7,9 @@ IceUart ice_uart;
 #if ICE_SPI
 IceSpi ice_spi;
 #endif
+#if ICE_ADC
+uint16_t ice_adc[ICE_ADCx_MAX_NUMS];
+#endif //ICE_ADC
 
 
 void ice_init()

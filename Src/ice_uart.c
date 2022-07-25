@@ -202,7 +202,7 @@ void ice_uart_it_callback(IceUart *ice)
 
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
         /* 发送任务通知 */
-        vTaskNotifyGiveFromISR(huart_handle, &xHigherPriorityTaskWoken);
+        vTaskNotifyGiveFromISR(hUART_handle, &xHigherPriorityTaskWoken);
         /* 如果xHigherPriorityTaskWoken = pdTRUE，那么退出中断后切到当前最高优先级任务执行 */
         portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
 //        ice->rx_flag = 1;

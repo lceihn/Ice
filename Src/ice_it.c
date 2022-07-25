@@ -229,6 +229,13 @@ void DMA0_Channel3_IRQHandler(void)
 }
 #endif
 
+#if ICE_ADC
+void DMA0_Channel0_IRQHandler()
+{
+    ice_adc_it_call_back();
+}
+#endif //ICE_ADC
+
 #endif
 
 
