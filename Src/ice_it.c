@@ -192,6 +192,17 @@ void DMA0_Channel3_IRQHandler(void)
             SPI_CTL0(ICE_SPIx) &= (uint32_t)(~SPI_CTL0_SPIEN);  //要改变SPI配置参数 就必须先失能SPI 修改后再使能
             SPI_CTL0(ICE_SPIx) |= 0x00000001;
             SPI_CTL0(ICE_SPIx) |= (uint32_t)SPI_CTL0_SPIEN;
+
+            uint8_t reg = ice_spi.rx[0] & 0x001F;
+            if (reg == 0x00) {
+                spi_write(ICE_SPIx, 0xFF);
+            } else if (reg == 0x12) {
+                spi_write(ICE_SPIx, 0xA2);
+            } else if (reg == 0x13) {
+                spi_write(ICE_SPIx, 0xA3);
+            } else if (reg == 0x14) {
+                spi_write(ICE_SPIx, 0xA4);
+            }
         }
     }
     else if ((DMA_INTF(ICE_SPIx_DMAx) & DMA_FLAG_ADD(DMA_INT_FTF, ICE_SPIx_DMAx_Rx_CH)))//接收通道x传输完成
@@ -203,7 +214,16 @@ void DMA0_Channel3_IRQHandler(void)
         SPI_CTL0(ICE_SPIx) &= 0xFFFFFFFE;
         SPI_CTL0(ICE_SPIx) |= (uint32_t)SPI_CTL0_SPIEN;
         spi_write(ICE_SPIx, 0);
+
+#if ICE_FREERTOS
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+        /* 发送任务通知 */
+        vTaskNotifyGiveFromISR(hspi_handle, &xHigherPriorityTaskWoken);
+        /* 如果xHigherPriorityTaskWoken = pdTRUE，那么退出中断后切到当前最高优先级任务执行 */
+        portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+#else
         ice_spi.rx_flag = 1;
+#endif
     }
 #endif
 }

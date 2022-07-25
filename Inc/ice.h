@@ -36,8 +36,13 @@ extern IceSpi ice_spi;
 extern TaskHandle_t htask1_handle;
 #if ICE_UART
 extern TaskHandle_t huart_handle;
-#endif
-#endif
+#endif //ICE_UART
+
+#if ICE_SPI
+extern TaskHandle_t hspi_handle;
+#endif //ICE_SPI
+
+#endif //ICE_FREERTOS
 
 
 /************ Function ***********/

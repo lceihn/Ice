@@ -189,7 +189,7 @@
 #if ICE_SPI
 #define ICE_SPI_MASTER  (0)
 #define ICE_SPI_SLAVE   (1)
-#define ICE_SPI_MODE    ICE_SPI_MASTER //选择spi主/从?
+#define ICE_SPI_MODE    ICE_SPI_SLAVE //选择spi主/从?
 //-------------------------------------------------
 #ifdef ICE_GD32F30X
 #define ICE_SPIx                (SPI1)
@@ -200,7 +200,7 @@
 #define ICE_SPIx_SCK_Pin        (GPIO_PIN_13)
 #define ICE_SPIx_MISO_Pin       (GPIO_PIN_14)
 #define ICE_SPIx_MOSi_Pin       (GPIO_PIN_15)
-__STATIC_INLINE void spi_write(uint32_t spi_periph, uint16_t data) {
+__STATIC_INLINE void spi_write(__IO uint32_t spi_periph, uint16_t data) {
     while(!(SPI_STAT(spi_periph) & SPI_FLAG_TBE));
     SPI_DATA(spi_periph) = data;
 }

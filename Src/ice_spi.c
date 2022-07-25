@@ -76,7 +76,7 @@ void ice_spi_init()
     spi_config();
 
 #if (ICE_SPI_MODE == ICE_SPI_SLAVE)
-    nvic_irq_enable(ICE_SPIx_DMAx_Rx_IRQn, 3, 3); //DMA接收通道中断使能
+    nvic_irq_enable(ICE_SPIx_DMAx_Rx_IRQn, 14, 0); //DMA接收通道中断使能
 #endif
 #endif
 
@@ -119,6 +119,34 @@ void ice_spi_write(uint8_t *buf, uint16_t len)
 void ice_spi_task(IceSpi *ice)
 {
 #if (ICE_SPI_MODE == ICE_SPI_SLAVE)
+
+#if ICE_FREERTOS
+
+    /*
+        函数ulTaskNotifyTake第一个参数说明：
+        1. 此参数设置为pdFALSE，任务vTaskMsgPro的TCB(任务控制块)中的变量ulNotifiedValue减一
+        2. 此参数设置为pdTRUE，任务vTaskMsgPro的TCB(任务控制块)中的变量ulNotifiedValue清零
+    */
+    uint32_t notice = ulTaskNotifyTake(pdTRUE, portMAX_DELAY); //获取任务计数信号量
+    if (notice == 1) //received data
+    {
+        uint8_t reg = ice_spi.rx[0] & 0x001F;
+
+        if (!(ice_spi.rx[0] & 0x8000)) { //写
+            if (reg == 0x00) {
+                __NOP();
+            }
+        }
+
+//        dma_channel_disable(ICE_SPIx_DMAx, ICE_SPIx_DMAx_Rx_CH); //dma disable
+        dma_memory_address_config(ICE_SPIx_DMAx, ICE_SPIx_DMAx_Rx_CH, (uint32_t)(ice->rx)); //dma mem address
+        dma_transfer_number_config(ICE_SPIx_DMAx, ICE_SPIx_DMAx_Rx_CH, ICE_SPIx_DMAx_SIZE); //dma size
+        spi_i2s_data_receive(ICE_SPIx);
+        dma_channel_enable(ICE_SPIx_DMAx, ICE_SPIx_DMAx_Rx_CH);
+//        ice->rx_flag = 0;
+    }
+
+#else
     if (ice->rx_flag) //received data
     {
         uint8_t reg = ice_spi.rx[0] & 0x001F;
@@ -130,13 +158,12 @@ void ice_spi_task(IceSpi *ice)
         dma_channel_disable(ICE_SPIx_DMAx, ICE_SPIx_DMAx_Rx_CH);
         dma_memory_address_config(ICE_SPIx_DMAx, ICE_SPIx_DMAx_Rx_CH, (uint32_t)(ice->rx));
         dma_transfer_number_config(ICE_SPIx_DMAx, ICE_SPIx_DMAx_Rx_CH, ICE_SPIx_DMAx_SIZE);
-        if (spi_i2s_flag_get(ICE_SPIx, SPI_FLAG_RBNE))
-        {
-            __IO uint16_t t = (uint32_t)SPI_DATA(ICE_SPIx);
-        }
+        spi_i2s_data_receive(ICE_SPIx);
         dma_channel_enable(ICE_SPIx_DMAx, ICE_SPIx_DMAx_Rx_CH);
         ice->rx_flag = 0;
     }
+#endif //ICE_FREERTOS
+
 #endif
 }
 

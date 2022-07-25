@@ -6,12 +6,19 @@ TaskHandle_t htask1_handle = NULL;
 #if ICE_UART
 TaskHandle_t huart_handle = NULL;
 #endif //ICE_UART
+#if ICE_SPI
+TaskHandle_t hspi_handle = NULL;
+#endif //ICE_SPI
 
 static void app_task_create();
 static void task1(void *pvParameters);
 #if ICE_UART
 static void uart_task(void *pvParameters);
 #endif //ICE_UART
+
+#if ICE_SPI
+static void spi_task(void *pvParameters);
+#endif //ICE_SPI
 
 /**
 * @brief create all task
@@ -32,6 +39,15 @@ void app_task_create()
                 20,                //task priority
                 &huart_handle);             //task handle
 #endif //ICE_UART
+
+#if ICE_SPI
+    xTaskCreate(spi_task,                  //task function
+                "spiTask",         //task
+                512,            //task stack size unit:word
+                NULL,           //task parameter
+                21,                //task priority
+                &hspi_handle);             //task handle
+#endif //ICE_SPI
 }
 
 /**
@@ -62,6 +78,20 @@ void uart_task(void *pvParameters)
     }
 }
 #endif //ICE_UART
+
+#if ICE_SPI
+/**
+* @brief uart dma rx task, priority:20, stack:512*4(2048)
+* @param pvParameters
+*/
+void spi_task(void *pvParameters)
+{
+    for (;;)
+    {
+        ice_spi_task(&ice_spi);
+    }
+}
+#endif //ICE_SPI
 
 /**
 * @brief FreeRTOS init
