@@ -22,7 +22,7 @@ void ice_gpio_init()
 //    gpio_pin_remap_config(GPIO_SWJ_SWDPENABLE_REMAP, ENABLE);
 
     /* configure gpio port */
-    gpio_init(GPIOB, GPIO_MODE_OUT_PP, GPIO_OSPEED_10MHZ, LED0_Pin | LED1_Pin);
+    gpio_init(GPIOB, GPIO_MODE_OUT_PP, GPIO_OSPEED_10MHZ, LED0_Pin);
     LED0(0);
 #endif
 
