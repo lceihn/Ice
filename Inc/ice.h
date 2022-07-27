@@ -37,13 +37,13 @@ extern uint16_t ice_adc[ICE_ADCx_MAX_NUMS];
 #endif //ICE_ADC
 
 #if ICE_FREERTOS
-extern TaskHandle_t hTASK1_handle;
+
 #if ICE_UART
 extern TaskHandle_t hUART_handle;
 #endif //ICE_UART
 
 #if ICE_SPI
-extern TaskHandle_t hspi_handle;
+extern TaskHandle_t hSPI_handle;
 #endif //ICE_SPI
 
 #if ICE_ADC
@@ -55,12 +55,9 @@ extern TaskHandle_t hADC_handle;
 
 /************ Function ***********/
 #ifdef ICE_GD32F30X
-uint32_t get_systick_us(void);
-uint32_t get_systick_ms(void);
+void bsp_InitDWT(void);
 void delay_ms(uint32_t ms);
 void delay_us(uint32_t us);
-void systick_deinit(void);
-void systick_handler(void);
 void ice_gd32_init();
 
 #if ICE_UART
@@ -122,9 +119,6 @@ void ice_pio_init();
 
 #ifdef ICE_DS18B20
 void ice_ds18b20_init();
-#ifdef ICE_GD32F30X
-__INLINE int16_t ice_ds18b20_getTemp();
-#endif
 #endif
 
 #ifdef ICE_EASYFLASH

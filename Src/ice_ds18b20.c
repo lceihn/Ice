@@ -2,13 +2,13 @@
 
 #ifdef ICE_DS18B20
 
-/**
-* @brief 从ds18b20得到温度值, 精度：0.1C
-* @return 温度值 （-550~1250）， 有符号
-*/
-int16_t ice_ds18b20_getTemp() {
-    return DS18B20_Get_Temp();
-}
+///**
+//* @brief 从ds18b20得到温度值, 精度：0.1C
+//* @return 温度值 （-550~1250）， 有符号
+//*/
+//int16_t ice_ds18b20_getTemp() {
+//    return DS18B20_Get_Temp();
+//}
 
 
 void ice_ds18b20_init()
@@ -23,7 +23,7 @@ void ice_ds18b20_init()
     do {
         flag = DS18B20_Init();
         cnt++;
-        if (cnt >= 5)
+        if (cnt >= 2)
             break;
     } while (flag);
 
@@ -34,7 +34,7 @@ void ice_ds18b20_init()
     for (int i = 0; i < 5; ++i)
     {
         DS18B20_Get_Temp();
-        delay_ms(1);
+//        delay_ms(1);
     }
 }
 

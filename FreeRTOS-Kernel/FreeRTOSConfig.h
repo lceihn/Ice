@@ -60,7 +60,7 @@
 #define configCPU_CLOCK_HZ                       ( SystemCoreClock )
 #define configTICK_RATE_HZ                       ((TickType_t)1000)
 #define configMAX_PRIORITIES                     ( 32 )                 //!最大优先级
-#define configMINIMAL_STACK_SIZE                 ((uint16_t)128)        //!最小stack大小 128*4 = 512B
+#define configMINIMAL_STACK_SIZE                 ((uint16_t)256)        //!最小stack大小 256*4 = 1024B
 #define configTOTAL_HEAP_SIZE                    ((size_t)48 * 1024)    //!总heap大小 48kB
 #define configMAX_TASK_NAME_LEN                  ( 16 )
 #define configUSE_TRACE_FACILITY                 1
@@ -69,7 +69,8 @@
 #define configQUEUE_REGISTRY_SIZE                8
 #define configUSE_RECURSIVE_MUTEXES              1
 #define configUSE_COUNTING_SEMAPHORES            1
-#define configUSE_PORT_OPTIMISED_TASK_SELECTION  0
+#define configUSE_PORT_OPTIMISED_TASK_SELECTION  1                      //!用于优化优先级列表中要执行的最高优先级任务的算法
+#define configIDLE_SHOULD_YIELD                  0                      //!用于使能与空闲任务同优先级的任务
 
 /* Co-routine definitions. */
 #define configUSE_CO_ROUTINES                    0

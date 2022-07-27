@@ -164,7 +164,8 @@ void ice_spi_task(IceSpi *ice)
     }
 #endif //ICE_FREERTOS
 
-#endif
+#endif //ICE_SPI_MODE
+
 }
 
 

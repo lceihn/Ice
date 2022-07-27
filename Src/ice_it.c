@@ -139,7 +139,6 @@ void PendSV_Handler(void)
 */
 void SysTick_Handler(void)
 {
-    systick_handler();
 #if ICE_FREERTOS
 #if (INCLUDE_xTaskGetSchedulerState == 1 )
     if (xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
@@ -218,7 +217,7 @@ void DMA0_Channel3_IRQHandler(void)
 #if ICE_FREERTOS
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
         /* 发送任务通知 */
-        vTaskNotifyGiveFromISR(hspi_handle, &xHigherPriorityTaskWoken);
+        vTaskNotifyGiveFromISR(hSPI_handle, &xHigherPriorityTaskWoken);
         /* 如果xHigherPriorityTaskWoken = pdTRUE，那么退出中断后切到当前最高优先级任务执行 */
         portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
 #else

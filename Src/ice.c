@@ -14,8 +14,12 @@ uint16_t ice_adc[ICE_ADCx_MAX_NUMS];
 
 void ice_init()
 {
+    __set_PRIMASK(1); //禁止全局中断
 #ifdef ICE_GD32F30X
     ice_gd32_init(); //gd32 system init
+#endif
+#if defined(ICE_GD32F30X) || defined(ICE_STM32)
+    bsp_InitDWT();
 #endif
 #ifdef ICE_RP2040
 //    vreg_set_voltage(VREG_VOLTAGE_1_30);//300MHz需要调压，如果270MHz不需要加这句
@@ -54,7 +58,7 @@ void ice_init()
 #ifdef ICE_EASYFLASH
     ice_easyflash_init(); //easyflash init
 #endif
-#if ICE_IWDG
+#if ICE_IWDG && !ICE_FREERTOS
     ice_iwdg_init(); //iwdg init
 #endif
 #if ICE_FREERTOS

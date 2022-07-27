@@ -24,14 +24,14 @@
 
 
 /************ 使能外设 ************/
-#define ICE_IWDG    0  //看门狗
+#define ICE_IWDG    1  //看门狗
 #define ICE_GPIO    1  //GPIO
 #define ICE_EXTI    0  //外部中断
 #define ICE_UART    0  //串口
-#define ICE_PWM     0  //PWM
-#define ICE_SPI     0  //SPI
+#define ICE_PWM     1  //PWM
+#define ICE_SPI     1  //SPI
 #define ICE_I2C     0  //I2C
-#define ICE_ADC     0  //ADC
+#define ICE_ADC     1  //ADC
 #define ICE_PIO     0  //PIO
 
 /************ 附加功能 ************/
@@ -247,7 +247,7 @@ __STATIC_INLINE void spi_write(__IO uint32_t spi_periph, uint16_t data) {
 #define ICE_ADCx_DMAx_CH    (DMA_CH0)
 #define ICE_ADCx_DMAx_IRQn  (DMA0_Channel0_IRQn)
 #define ICE_ADCx_MAX_NUMS   (18)            //ADC最大通道数
-#define ICE_ADCx_CH_NUMS    (2)             //ADC通道数
+#define ICE_ADCx_CH_NUMS    (3)             //ADC通道数
 
 #define ADC_VOLT_Port       GPIOA           //PB0: ADC01_IN8, PA2: ADC012_IN2
 #define ADC_VOLT_Pin        GPIO_PIN_2      //PB1: ADC01_IN9, PA3: ADC012_IN3

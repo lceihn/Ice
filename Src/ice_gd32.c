@@ -21,7 +21,7 @@ void systick_config(void)
         }
     }
     /* configure the systick handler priority */
-    NVIC_SetPriority(SysTick_IRQn, 0x00U);
+    NVIC_SetPriority(SysTick_IRQn, 0x05U);
 }
 
 /**
