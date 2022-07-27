@@ -14,18 +14,16 @@ TaskHandle_t hADC_handle = NULL;
 #endif //ICE_ADC
 
 static void app_task_create();
-static void task1(void *pvParameters);      //¿´ÃÅ¹·
-static void temp_task(void *pvParameters);  //ÎÂ¶È¼à²â
-static void pll_task(void *pvParameters);  //¼à²âPLL×´Ì¬
+static void task1(void *pvParameters);      //çœ‹é—¨ç‹—
 
 #if ICE_ADC
-static void adc_task(void *pvParameters);   //µçÑ¹µçÁ÷¼à²â, ¼à²âÍâ²¿ÊäÈë¼ì²¨
+static void adc_task(void *pvParameters);   //ç”µå‹ç”µæµç›‘æµ‹, ç›‘æµ‹å¤–éƒ¨è¾“å…¥æ£€æ³¢
 #endif //ICE_ADC
 #if ICE_UART
 static void uart_task(void *pvParameters);
 #endif //ICE_UART
 #if ICE_SPI
-static void spi_task(void *pvParameters);   //spi ´Ó»ú
+static void spi_task(void *pvParameters);   //spi ä»æœº
 #endif //ICE_SPI
 //********************************************************************//
 
@@ -44,18 +42,6 @@ void app_task_create()
                  NULL,      //task parameter
                  5,            //task priority
                  &hTASK1_handle );      //task handle
-    xTaskCreate( temp_task,   	            //task function
-                 "task2",     	//task
-                 1024,       //task stack size unit:word
-                 NULL,      //task parameter
-                 6,            //task priority
-                 &hTEMP_handle );      //task handle
-    xTaskCreate( pll_task,   	            //task function
-                 "task4",     	//task
-                 1024,       //task stack size unit:word
-                 NULL,      //task parameter
-                 18,            //task priority
-                 &hPLL_handle );      //task handle
 
 #if ICE_ADC
     xTaskCreate(adc_task,                  //task function
